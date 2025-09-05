@@ -325,3 +325,32 @@ body {
         font-size: 1.8rem;
     }
 }
+
+.login-btn2 {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 0.9em;
+  color: #495057;
+  cursor: pointer;
+  font-family: inherit;
+  position: absolute;
+  top: 20px;
+  right: 34px;
+
+  width:auto;
+  display:incline-block;
+}
+
+.login-btn2:hover {
+  background: #e9ecef;
+  border-color: #dee2e6;
+}
+
+.btn-guest {
+    text-align: center;
+    margin: 1.5rem 0;
+    display: block;
+    color: #6c757d;
+}

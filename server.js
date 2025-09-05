@@ -13,6 +13,10 @@ app.get('/', (_req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'login.html'));
 });
 
+app.get('home', (_req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'home.html'));
+});
+
 // Start the server
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
