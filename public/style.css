@@ -379,3 +379,9 @@ body {
     background: #e9ecef;
     border-color: #adb5bd;
 }
+
+.disabled {
+  opacity: 0;
+  cursor: not-allowed;
+  pointer-events: auto; /* keep clicks so we can redirect to /login */
+}
