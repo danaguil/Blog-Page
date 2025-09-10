@@ -1,6 +1,11 @@
+require('dotenv').config(); // load env variables from .env file
+
 // server.js
 const express = require('express');
 const path = require('path');
+
+const jwt = require('jsonwebtoken'); // importing json web token for authentication
+app.use(express.json()); // use json from the body it's getting passed
 
 // Create an Express application
 const app = express();
@@ -17,13 +22,23 @@ app.get('/home', (_req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'home.html'));
 });
 
-// telling express if someone is logged in
-app.get('/api/isLoggedIn', (_req, res) => {
-  if(req.session && req.session.user) {
-    res.json({ user: true }); // logged in
-  } else {
-    res.json({ user: null }); // not logged in
-  }
+// Going to create a JWT token when user logs in
+app.post('/login', (req, res) => {
+  // Authentication Username and Password
+  // input authentication login here!!! 
+  const username = req.body.username; // payload
+  const password = req.body.password;
+
+  const user = { name: username };
+  /* 
+     Will serialize our user obj
+     Needs a secret key to sign the token
+          Create this in a env var, with a secret key using node crypt lib
+
+     No exp date yet
+  */
+  const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET);
+  res.json({ accessToken: accessToken });
 });
 
 // Start the server
