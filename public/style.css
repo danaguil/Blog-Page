@@ -228,27 +228,6 @@ body {
     font-style: italic;
 }
 
-.demo-credentials {
-    background: #f8f9fa;
-    padding: 1.5rem;
-    border-radius: 6px;
-    margin-bottom: 2rem;
-    border: 1px solid #e9ecef;
-}
-
-.demo-credentials h3 {
-    color: #495057;
-    font-size: 1rem;
-    margin-bottom: 0.75rem;
-    font-weight: normal;
-}
-
-.demo-credentials p {
-    color: #6c757d;
-    font-size: 0.9rem;
-    margin: 0.3rem 0;
-}
-
 .form-group {
     margin-bottom: 1.5rem;
 }
@@ -348,13 +327,6 @@ body {
   border-color: #dee2e6;
 }
 
-.btn-guest {
-    text-align: center;
-    margin: 1.5rem 0;
-    display: block;
-    color: #6c757d;
-}
-
 .article-actions {
     margin-top: 20px;
     padding-top: 15px;
@@ -380,8 +352,90 @@ body {
     border-color: #adb5bd;
 }
 
-.disabled {
-  opacity: 0;
-  cursor: not-allowed;
-  pointer-events: auto; /* keep clicks so we can redirect to /login */
+.subtitle {
+    text-align: center;
+    color: #718096;
+    font-style: italic;
+    margin: 0 0 40px 0;
+    font-size: 16px;
+}
+
+.register-box {
+    background: white;
+    border-radius: 8px;
+    padding: 40px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e2e8f0;
+}
+
+.register-form {
+    width: 100%;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    color: #4a5568;
+    font-size: 14px;
+    margin-bottom: 6px;
+    font-weight: 500;
+}
+
+input[type="text"],
+input[type="password"] {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    font-size: 16px;
+    color: #2d3748;
+    background-color: white;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus {
+    outline: none;
+    border-color: #4299e1;
+    box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+}
+
+.register-button {
+    width: 100%;
+    background-color: #4a5568;
+    color: white;
+    padding: 12px;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+    margin-bottom: 20px;
+}
+
+.register-button:hover {
+    background-color: #2d3748;
+}
+
+.login-link {
+    text-align: center;
+}
+
+.login-link a, .btn-reg {
+    text-align: center;
+    margin: 1.5rem 0;
+    display: block;
+
+    color: #4299e1;
+    text-decoration: none;
+    font-size: 15px;
+}
+
+.login-link a:hover {
+    text-decoration: underline;
 }
