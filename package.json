@@ -1,6 +1,7 @@
 {
   "dependencies": {
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "supertokens-web-js": "^0.16.0"
   },
   "name": "blog",
   "version": "1.0.0",
