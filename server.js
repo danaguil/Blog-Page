@@ -60,63 +60,7 @@ function authenticateToken(req, res, next) {
 
 app.listen(PORT);
 
-
-
-
-/*
-// Mock user storage (in production, use a database)
-const users = [
-  // Example user - in production, passwords should already be hashed in the database
-  { 
-    id: 1, 
-    username: 'testuser', 
-    password: '$2b$10$example.hashed.password' // This would be a real bcrypt hash
-  }
-];
-
-
-// serve login.html at "/"
-app.get('/', (_req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'login.html'));
-});
-
-app.get('/home', (_req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'home.html'));
-});
-
-// User registration endpoint
-app.post('/register', async (req, res) => {
-  try {
-    // Hash the password before storing
-    const hashedPassword = await bcrypt.hash(req.body.password, 10);
-    
-    // Check if user already exists
-    const existingUser = users.find(u => u.username === req.body.username);
-    if (existingUser) {
-      return res.status(400).json({ error: 'User already exists' });
-    }
-    
-    // Create new user
-    const newUser = {
-      id: users.length + 1,
-      username: req.body.username,
-      password: hashedPassword
-    };
-    
-    users.push(newUser);
-    res.status(201).json({ message: 'User created successfully' });
-  } catch (error) {
-    console.error('Registration error:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
-
-
-
 // Start the server
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
-
-
-*/

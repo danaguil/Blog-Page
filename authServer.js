@@ -8,13 +8,43 @@ const bcrypt = require('bcrypt'); // importing bcrypt for password hashing
 const jwt = require('jsonwebtoken'); // importing json web token 
 const {mongoose} = require('mongoose'); // importing mongoose
 
-
 // Create an Express application
 const app = express();
 const PORT = process.env.PORT || 4000;
 
 app.use(express.json()); // use json from the body it's getting passed in req
 app.use(express.static(path.join(__dirname, 'public'))); // servign static files from 'public' directory
+
+
+// Mock user storage (in production, use a database)
+const users = [
+  // Example user - in production, passwords should already be hashed in the database
+  { 
+    id: 1, 
+    username: 'testuser', 
+    password: '$2b$10$example.hashed.password' // This would be a real bcrypt hash
+  }
+];
+
+app.get('/users', (req, res) => {
+  res.json(users); // returning the list of users
+})
+
+// async b/c bcrypt lib is async
+app.post('/users', async (req, res) => {
+  try {
+    const hashedPassword = await bcrypt.hash(req.body.password, 10); // hashing the password with the salt
+    console.log(hashedPassword);
+
+    const user = {name: req.body.name, password: hashedPassword};
+    users.push(user);
+    res.status(201).send();
+  } catch {
+    res.status(500).send();
+  }
+})
+
+
 
 // better to store refresh tokens in db or redis
 let refreshTokens = []; // store refresh tokens in memory, in production use db or redis
@@ -34,6 +64,12 @@ app.post('/token', (req, res) => {
     res.json({ accessToken: accessToken }); // sending new access token
 })
 })
+
+// delete those refresh tokens when user logs out
+app.delete('/logout', (req, res) => {
+  refreshTokens = refreshTokens.filter(token => token !== req.body.token); // remove the token from the array
+  res.sendStatus(204); // successfully deleted
+});
 
 // User login endpoint. making sure nobody can access
 app.post('/login', (req, res) => {
@@ -92,24 +128,13 @@ function generateAccessToken(user) {
 }
 
 
-
-
-
 app.listen(PORT);
 
 
 
 
 /*
-// Mock user storage (in production, use a database)
-const users = [
-  // Example user - in production, passwords should already be hashed in the database
-  { 
-    id: 1, 
-    username: 'testuser', 
-    password: '$2b$10$example.hashed.password' // This would be a real bcrypt hash
-  }
-];
+
 
 
 // serve login.html at "/"
