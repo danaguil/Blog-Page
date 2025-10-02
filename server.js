@@ -4,15 +4,95 @@ require('dotenv').config(); // load env variables from .env file
 const express = require('express');
 const path = require('path');
 const bcrypt = require('bcrypt'); // importing bcrypt for password hashing
-const jwt = require('jsonwebtoken'); // importing json web token for 
+const jwt = require('jsonwebtoken'); // importing json web token 
+const {mongoose} = require('mongoose'); // importing mongoose
+
 
 // Create an Express application
 const app = express();
 const PORT = process.env.PORT || 8080;
 
-app.use(express.json()); // use json from the body it's getting passed
+app.use(express.json()); // use json from the body it's getting passed in req
 app.use(express.static(path.join(__dirname, 'public'))); // servign static files from 'public' directory
 
+
+// testing if our server is working fine using rest
+// GET http://localhost:8080/posts
+const posts = [
+  {
+    username: "john_doe",
+    title: "My First Post",
+  },
+  {
+    username: "jane_smith",
+    title: "A Day in the Life"
+  }
+]
+
+app.get('/posts', (req, res) => {
+  res.json(posts);
+})
+
+
+// User login endpoint. making sure nobody can access
+app.post('/login', (req, res) => {
+  //try {
+    /*
+    // Find the user
+    const user = users.find(u => u.username === req.body.username);
+    if (!user) {
+      return res.status(400).json({ error: 'Invalid credentials' });
+    }
+    
+    // Verify password
+    const validPassword = await bcrypt.compare(req.body.password, user.password);
+    if (!validPassword) {
+      return res.status(400).json({ error: 'Invalid credentials' });
+    }
+    
+    // Create JWT token (don't include sensitive data like password)
+    const tokenPayload = { 
+      id: user.id, 
+      username: user.username 
+    };
+    */
+
+    // testing without db
+    const username = req.body.username;
+    const user = {name: username};
+
+    /*
+    const accessToken = jwt.sign(
+      tokenPayload, 
+      process.env.ACCESS_TOKEN_SECRET,
+      { expiresIn: '1h' } // Add expiration for security, might not need it
+    );
+    */
+
+    // serializing the user using the jwt
+    const accessToken = jwt.sign(
+      user, 
+      process.env.ACCESS_TOKEN_SECRET
+    );
+
+    res.json({ 
+      accessToken: accessToken
+      //user: { id: user.id, username: user.username }
+    });
+    /*
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+    */
+});
+
+app.listen(PORT);
+
+
+
+
+/*
 // Mock user storage (in production, use a database)
 const users = [
   // Example user - in production, passwords should already be hashed in the database
@@ -61,45 +141,6 @@ app.post('/register', async (req, res) => {
 });
 
 
-
-// User login endpoint
-app.post('/login', async (req, res) => {
-  try {
-    // Find the user
-    const user = users.find(u => u.username === req.body.username);
-    if (!user) {
-      return res.status(400).json({ error: 'Invalid credentials' });
-    }
-    
-    // Verify password
-    const validPassword = await bcrypt.compare(req.body.password, user.password);
-    if (!validPassword) {
-      return res.status(400).json({ error: 'Invalid credentials' });
-    }
-    
-    // Create JWT token (don't include sensitive data like password)
-    const tokenPayload = { 
-      id: user.id, 
-      username: user.username 
-    };
-    
-    const accessToken = jwt.sign(
-      tokenPayload, 
-      process.env.ACCESS_TOKEN_SECRET,
-      { expiresIn: '1h' } // Add expiration for security, might not need it
-    );
-    
-    res.json({ 
-      accessToken: accessToken,
-      user: { id: user.id, username: user.username }
-    });
-    
-  } catch (error) {
-    console.error('Login error:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
-
 // creating middle ware function to authenticate token
 function authenticateToken(req, res, next) {
   // Give the token from the header
@@ -121,3 +162,6 @@ function authenticateToken(req, res, next) {
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+
+
+*/
