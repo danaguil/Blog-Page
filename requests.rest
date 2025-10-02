@@ -1,8 +1,8 @@
 
 // Authorization and Authentication using JWT is working prob
 // saving our users
-GET http://localhost:8080/posts
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiamFuZV9zbWl0aCIsImlhdCI6MTc1OTQzMzc4OH0.n8WMpCYiP4MxyLYwTvMib_mwAZELEwheufMFJLnYX3Y
+GET http://localhost:4000/posts
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiamFuZV9zbWl0aCIsImlhdCI6MTc1OTQzNDQzMH0.7BzNF-bB5SNmE610ehziH5BFp17EVl-ODlyyIc4dgyQ
 
 ###
 POST http://localhost:8080/login
