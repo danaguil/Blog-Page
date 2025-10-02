@@ -39,60 +39,6 @@ app.get('/posts', authenticateToken, (req, res) => {
 })
 
 
-// User login endpoint. making sure nobody can access
-app.post('/login', (req, res) => {
-  //try {
-    /*
-    // Find the user
-    const user = users.find(u => u.username === req.body.username);
-    if (!user) {
-      return res.status(400).json({ error: 'Invalid credentials' });
-    }
-    
-    // Verify password
-    const validPassword = await bcrypt.compare(req.body.password, user.password);
-    if (!validPassword) {
-      return res.status(400).json({ error: 'Invalid credentials' });
-    }
-    
-    // Create JWT token (don't include sensitive data like password)
-    const tokenPayload = { 
-      id: user.id, 
-      username: user.username 
-    };
-    */
-
-    // testing without db
-    const username = req.body.username;
-    const user = {name: username};
-
-    /*
-    const accessToken = jwt.sign(
-      tokenPayload, 
-      process.env.ACCESS_TOKEN_SECRET,
-      { expiresIn: '1h' } // Add expiration for security, might not need it
-    );
-    */
-
-    // serializing the user using the jwt
-    const accessToken = jwt.sign(
-      user, 
-      process.env.ACCESS_TOKEN_SECRET
-    );
-
-    res.json({ 
-      accessToken: accessToken
-      //user: { id: user.id, username: user.username }
-    });
-    /*
-  } catch (error) {
-    console.error('Login error:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-    */
-});
-
-
 // creating middle ware function to authenticate token for POST
 // get token, verify that token/user and return
 function authenticateToken(req, res, next) {

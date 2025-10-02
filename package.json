@@ -14,7 +14,7 @@
     "start": "node server.js",
     "dev": "npx nodemon server.js",
     "devStart": "nodemon server.js",
-    "devStart2": "nodemon server2.js"
+    "devStartAuth": "nodemon authServer.js"
 
   },
   "keywords": [],

@@ -1,3 +1,4 @@
+// server only for authentication and issuing token, login, logout and refresh
 require('dotenv').config(); // load env variables from .env file
 
 // server.js
@@ -15,27 +16,13 @@ const PORT = process.env.PORT || 4000;
 app.use(express.json()); // use json from the body it's getting passed in req
 app.use(express.static(path.join(__dirname, 'public'))); // servign static files from 'public' directory
 
+// better to store refresh tokens in db or redis
+let refreshTokens = []; // store refresh tokens in memory, in production use db or redis
 
-// testing if our server is working fine using rest
-// GET http://localhost:8080/posts
-const posts = [
-  {
-    username: 'john_doe',
-    title: 'My First Post'
-  },
-  {
-    username: 'jane_smith',
-    title: 'A Day in the Life'
-  }
-]
-
-// adding middle ware to authenticate token for POST
-app.get('/posts', authenticateToken, (req, res) => {
-  // we have no access to user after authenticating the token
-  // res.json(posts);
-
-  // filtering the list of post, only return the post that belongs to the user
-  res.json(posts.filter(post => post.username === req.user.name));
+// creating a new token
+// POST http://localhost:4000/token
+app.post('/token', (req, res) => {
+  const refreshToken = req.body.token;
 })
 
 
@@ -75,13 +62,12 @@ app.post('/login', (req, res) => {
     */
 
     // serializing the user using the jwt
-    const accessToken = jwt.sign(
-      user, 
-      process.env.ACCESS_TOKEN_SECRET
-    );
+    const accessToken = generateAccessToken(user) // gen access token
+    const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET, refreshToken.push(refreshToken)); // creating resfresh token, adding same user to token
+
 
     res.json({ 
-      accessToken: accessToken
+      accessToken: accessToken, refreshToken: refreshToken
       //user: { id: user.id, username: user.username }
     });
     /*
@@ -92,24 +78,12 @@ app.post('/login', (req, res) => {
     */
 });
 
+function generateAccessToken(user) {
+  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15s' });
+}
 
-// creating middle ware function to authenticate token for POST
-// get token, verify that token/user and return
-function authenticateToken(req, res, next) {
-  // Getting token from header
-  const authHeader = req.headers['authorization']; // have the format of bearer than token
-  // if we have authHeader, then we return token
-  const token = authHeader && authHeader.split(' ')[1]; // split at the space and get the token part
-  // Bearer TOKEN
-  if (token == null) return res.sendStatus(401); // if there is no token
 
-  // after, we know we have a valid token
-  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-    if(err) return res.sendStatus(403); // if the token is no longer valid, 403: token is no longer valid
-    req.user = user; // if everything is good, we will have the user in the req obj
-    next(); // call the next middle ware or the actual request handler
-  });
-} // moving on from middleware
+
 
 
 app.listen(PORT);
