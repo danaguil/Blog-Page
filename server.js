@@ -20,11 +20,11 @@ app.use(express.static(path.join(__dirname, 'public'))); // servign static files
 // GET http://localhost:8080/posts
 const posts = [
   {
-    username: 'john_doe',
+    username: 'dan',
     title: 'My First Post'
   },
   {
-    username: 'jane_smith',
+    username: 'carlos',
     title: 'A Day in the Life'
   }
 ]

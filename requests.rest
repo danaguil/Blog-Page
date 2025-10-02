@@ -2,12 +2,14 @@
 // Authorization and Authentication using JWT is working prob
 // saving our users
 GET http://localhost:8080/posts
-Authorization: 
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiZGFuIiwiaWF0IjoxNzU5NDM2NTMzLCJleHAiOjE3NTk0MzY1NzN9.UM0Wlp3ggAMNE6vrDMkNhxrTzl0bXjiO3BNLZIDZry4
+
 ###
 POST http://localhost:4000/token
-Content-type: application/json
+Content-Type: application/json
+
 {
-    "token": ""
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiZGFuIiwiaWF0IjoxNzU5NDM2MzIzfQ.m88RUG05PTVpHzk8fqdHkWgnnEwZjMIICZktvGToQHc"
 }
 
 ###
@@ -15,5 +17,5 @@ POST http://localhost:4000/login
 Content-Type: application/json
     
 {
-    "username": ""
+    "username": "dan"
 }

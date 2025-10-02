@@ -23,8 +23,17 @@ let refreshTokens = []; // store refresh tokens in memory, in production use db 
 // POST http://localhost:4000/token
 app.post('/token', (req, res) => {
   const refreshToken = req.body.token;
-})
 
+  // checking if token exist
+  if(refreshToken == null) return res.sendStatus(401);
+  if(!refreshTokens.includes(refreshToken)) return res.sendStatus(403); // if token is not valid
+
+  jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
+    if(err) return res.sendStatus(403);
+    const accessToken = generateAccessToken({ name: user.name }); // creating new access token
+    res.json({ accessToken: accessToken }); // sending new access token
+})
+})
 
 // User login endpoint. making sure nobody can access
 app.post('/login', (req, res) => {
@@ -63,8 +72,8 @@ app.post('/login', (req, res) => {
 
     // serializing the user using the jwt
     const accessToken = generateAccessToken(user) // gen access token
-    const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET, refreshToken.push(refreshToken)); // creating resfresh token, adding same user to token
-
+    const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET); // creating resfresh token, adding same user to token
+    refreshTokens.push(refreshToken) // saving refresh token
 
     res.json({ 
       accessToken: accessToken, refreshToken: refreshToken
@@ -79,7 +88,7 @@ app.post('/login', (req, res) => {
 });
 
 function generateAccessToken(user) {
-  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15s' });
+  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '40s' });
 }
 
 
