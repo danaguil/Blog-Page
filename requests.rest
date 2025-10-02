@@ -1,9 +1,13 @@
+
+// Authorization and Authentication using JWT is working prob
+// saving our users
 GET http://localhost:8080/posts
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiamFuZV9zbWl0aCIsImlhdCI6MTc1OTQzMzc4OH0.n8WMpCYiP4MxyLYwTvMib_mwAZELEwheufMFJLnYX3Y
 
 ###
 POST http://localhost:8080/login
 Content-Type: application/json
     
 {
-    "username": "john_doe"
+    "username": "jane_smith"
 }

@@ -20,17 +20,22 @@ app.use(express.static(path.join(__dirname, 'public'))); // servign static files
 // GET http://localhost:8080/posts
 const posts = [
   {
-    username: "john_doe",
-    title: "My First Post",
+    username: 'john_doe',
+    title: 'My First Post'
   },
   {
-    username: "jane_smith",
-    title: "A Day in the Life"
+    username: 'jane_smith',
+    title: 'A Day in the Life'
   }
 ]
 
-app.get('/posts', (req, res) => {
-  res.json(posts);
+// adding middle ware to authenticate token for POST
+app.get('/posts', authenticateToken, (req, res) => {
+  // we have no access to user after authenticating the token
+  // res.json(posts);
+
+  // filtering the list of post, only return the post that belongs to the user
+  res.json(posts.filter(post => post.username === req.user.name));
 })
 
 
@@ -87,6 +92,26 @@ app.post('/login', (req, res) => {
     */
 });
 
+
+// creating middle ware function to authenticate token for POST
+// get token, verify that token/user and return
+function authenticateToken(req, res, next) {
+  // Getting token from header
+  const authHeader = req.headers['authorization']; // have the format of bearer than token
+  // if we have authHeader, then we return token
+  const token = authHeader && authHeader.split(' ')[1]; // split at the space and get the token part
+  // Bearer TOKEN
+  if (token == null) return res.sendStatus(401); // if there is no token
+
+  // after, we know we have a valid token
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+    if(err) return res.sendStatus(403); // if the token is no longer valid, 403: token is no longer valid
+    req.user = user; // if everything is good, we will have the user in the req obj
+    next(); // call the next middle ware or the actual request handler
+  });
+} // moving on from middleware
+
+
 app.listen(PORT);
 
 
@@ -139,22 +164,6 @@ app.post('/register', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
-
-
-// creating middle ware function to authenticate token
-function authenticateToken(req, res, next) {
-  // Give the token from the header
-  const authHeader = req.headers['authorization']; // have the format of bearer than token
-  const token = authHeader && authHeader.split(' ')[1]; // split at the space and get the token part
-  // Bearer TOKEN
-  if (token == null) return res.sendStatus(401); // if there is no token
-
-  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-    if(err) return res.sendStatus(403); // if the token is no longer valid
-    req.user = user; // if everything is good, we will have the user in the req obj
-    next(); // call the next middle ware or the actual request handler
-  });
-} // moving on from middleware
 
 
 
