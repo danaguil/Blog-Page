@@ -6,6 +6,7 @@ const path = require('path');
 const bcrypt = require('bcrypt'); // importing bcrypt for password hashing
 const jwt = require('jsonwebtoken'); // importing json web token 
 const connectDB = require('./dbConnect');
+const UserModel = require('./models/users');
 
 // Create an Express application
 const app = express();
@@ -58,8 +59,47 @@ function authenticateToken(req, res, next) {
   });
 } // moving on from middleware
 
+
+// serve login.html at "/"
+app.get('/', (_req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'login.html'));
+});
+
+app.get('/home', (_req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'home.html'));
+});
+
+// User registration endpoint
+app.post('/register', async (req, res) => {
+  try {
+    const { username, password } = req.body; // all info from frontend will be in req.body
+    
+    // Check if user already exists
+    const existingUser = await UserModel.findOne({ username });
+    if (existingUser) {
+      return res.status(400).json({ error: 'User already exists' });
+    }
+
+    // Hash the password before storing
+    const hashedPassword = await bcrypt.hash(password, 10);
+    
+    // Create new user in database
+    const newUser = await UserModel.create({
+      username,
+      password: hashedPassword
+    });
+
+    res.status(201).json({ message: 'User created successfully' });
+  } catch (error) {
+    console.error('Registration error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Start the server
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+
 
 
