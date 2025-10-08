@@ -5,8 +5,7 @@ const express = require('express');
 const path = require('path');
 const bcrypt = require('bcrypt'); // importing bcrypt for password hashing
 const jwt = require('jsonwebtoken'); // importing json web token 
-const {mongoose} = require('mongoose'); // importing mongoose
-
+const connectDB = require('./dbConnect');
 
 // Create an Express application
 const app = express();
@@ -15,6 +14,8 @@ const PORT = process.env.PORT || 8080;
 app.use(express.json()); // use json from the body it's getting passed in req
 app.use(express.static(path.join(__dirname, 'public'))); // servign static files from 'public' directory
 
+// connecting to the database
+connectDB();
 
 // testing if our server is working fine using rest
 // GET http://localhost:8080/posts
@@ -57,10 +58,8 @@ function authenticateToken(req, res, next) {
   });
 } // moving on from middleware
 
-
-app.listen(PORT);
-
-// Start the server
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+
+

@@ -6,7 +6,6 @@ const express = require('express');
 const path = require('path');
 const bcrypt = require('bcrypt'); // importing bcrypt for password hashing
 const jwt = require('jsonwebtoken'); // importing json web token 
-const {mongoose} = require('mongoose'); // importing mongoose
 
 // Create an Express application
 const app = express();
