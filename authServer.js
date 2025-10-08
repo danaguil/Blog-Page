@@ -44,8 +44,6 @@ app.post('/users', async (req, res) => {
   }
 })
 
-
-
 // better to store refresh tokens in db or redis
 let refreshTokens = []; // store refresh tokens in memory, in production use db or redis
 
@@ -72,9 +70,8 @@ app.delete('/logout', (req, res) => {
 });
 
 // User login endpoint. making sure nobody can access
-app.post('/login', (req, res) => {
-  //try {
-    /*
+app.post('/login', async (req, res) => {
+  try {
     // Find the user
     const user = users.find(u => u.username === req.body.username);
     if (!user) {
@@ -92,19 +89,7 @@ app.post('/login', (req, res) => {
       id: user.id, 
       username: user.username 
     };
-    */
-
-    // testing without db
-    const username = req.body.username;
-    const user = {name: username};
-
-    /*
-    const accessToken = jwt.sign(
-      tokenPayload, 
-      process.env.ACCESS_TOKEN_SECRET,
-      { expiresIn: '1h' } // Add expiration for security, might not need it
-    );
-    */
+  
 
     // serializing the user using the jwt
     const accessToken = generateAccessToken(user) // gen access token
@@ -115,12 +100,11 @@ app.post('/login', (req, res) => {
       accessToken: accessToken, refreshToken: refreshToken
       //user: { id: user.id, username: user.username }
     });
-    /*
+    
   } catch (error) {
     console.error('Login error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
-    */
 });
 
 function generateAccessToken(user) {
@@ -134,9 +118,6 @@ app.listen(PORT);
 
 
 /*
-
-
-
 // serve login.html at "/"
 app.get('/', (_req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'login.html'));
