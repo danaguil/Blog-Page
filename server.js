@@ -69,6 +69,10 @@ app.get('/home', (_req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'home.html'));
 });
 
+app.get('/register', (_req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'register.html'));
+});
+
 // User registration endpoint
 app.post('/register', async (req, res) => {
   try {

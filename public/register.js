@@ -2,9 +2,19 @@
     This script handles the registration form submission
     Send req.body to the /register endpoin
 */
+
 document.getElementById('registerForm').addEventListener('submit', async (e) => {
+    e.preventDefault(); // CRITICAL: Prevent default form submission
+    
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirm-password').value;
+
+    // Validate passwords match
+    if (password !== confirmPassword) {
+        alert('Passwords do not match!');
+        return;
+    }
 
     try {
         const response = await fetch('/register', {
