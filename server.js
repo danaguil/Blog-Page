@@ -1,25 +1,25 @@
 require('dotenv').config(); // load env variables from .env file
 
-// server.js
 const express = require('express');
 const path = require('path');
-const bcrypt = require('bcrypt'); // importing bcrypt for password hashing
-const jwt = require('jsonwebtoken'); // importing json web token 
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const connectDB = require('./dbConnect');
 const UserModel = require('./models/users');
 
-// Create an Express application
 const app = express();
 const PORT = process.env.PORT || 8080;
 
-app.use(express.json()); // use json from the body it's getting passed in req
-app.use(express.static(path.join(__dirname, 'public'))); // servign static files from 'public' directory
+app.use(express.json());
+app.use(express.static(path.join(__dirname, 'public')));
 
 // connecting to the database
 connectDB();
 
-// testing if our server is working fine using rest
-// GET http://localhost:8080/posts
+// Store refresh tokens (in production, use Redis or database)
+let refreshTokens = [];
+
+// Mock posts for testing
 const posts = [
   {
     username: 'dan',
@@ -29,38 +29,29 @@ const posts = [
     username: 'carlos',
     title: 'A Day in the Life'
   }
-]
+];
 
-// adding middle ware to authenticate token for POST
-app.get('/posts', authenticateToken, (req, res) => {
-  // we have no access to user after authenticating the token
-  // res.json(posts);
-
-  // filtering the list of post, only return the post that belongs to the user
-  res.json(posts.filter(post => post.username === req.user.name));
-})
-
-
-// creating middle ware function to authenticate token for POST
-// get token, verify that token/user and return
+// ===== MIDDLEWARE =====
 function authenticateToken(req, res, next) {
-  // Getting token from header
-  const authHeader = req.headers['authorization']; // have the format of bearer than token
-  // if we have authHeader, then we return token
-  const token = authHeader && authHeader.split(' ')[1]; // split at the space and get the token part
-  // Bearer TOKEN
-  if (token == null) return res.sendStatus(401); // if there is no token
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+  
+  if (token == null) return res.sendStatus(401);
 
-  // after, we know we have a valid token
   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-    if(err) return res.sendStatus(403); // if the token is no longer valid, 403: token is no longer valid
-    req.user = user; // if everything is good, we will have the user in the req obj
-    next(); // call the next middle ware or the actual request handler
+    if(err) return res.sendStatus(403);
+    req.user = user;
+    next();
   });
-} // moving on from middleware
+}
 
+function generateAccessToken(user) {
+  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '40s' });
+}
 
-// serve login.html at "/"
+// ===== ROUTES =====
+
+// Serve HTML pages
 app.get('/', (_req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'login.html'));
 });
@@ -73,10 +64,17 @@ app.get('/register', (_req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'register.html'));
 });
 
-// User registration endpoint
+// Protected route example
+app.get('/posts', authenticateToken, (req, res) => {
+  res.json(posts.filter(post => post.username === req.user.username));
+});
+
+// ===== AUTHENTICATION ENDPOINTS =====
+
+// User registration
 app.post('/register', async (req, res) => {
   try {
-    const { username, password } = req.body; // all info from frontend will be in req.body
+    const { username, password } = req.body;
     
     // Check if user already exists
     const existingUser = await UserModel.findOne({ username });
@@ -100,10 +98,69 @@ app.post('/register', async (req, res) => {
   }
 });
 
+// User login
+app.post('/login', async (req, res) => {
+  try {
+    const { username, password } = req.body;
+    
+    // Find the user in MongoDB
+    const user = await UserModel.findOne({ username });
+    if (!user) {
+      return res.status(400).json({ error: 'Invalid credentials' });
+    }
+    
+    // Verify password
+    const validPassword = await bcrypt.compare(password, user.password);
+    if (!validPassword) {
+      return res.status(400).json({ error: 'Invalid credentials' });
+    }
+    
+    // Create token payload (don't include password)
+    const tokenPayload = { 
+      id: user._id,
+      username: user.username 
+    };
+    
+    // Generate tokens
+    const accessToken = generateAccessToken(tokenPayload);
+    const refreshToken = jwt.sign(tokenPayload, process.env.REFRESH_TOKEN_SECRET);
+    refreshTokens.push(refreshToken);
+
+    res.json({ 
+      accessToken: accessToken, 
+      refreshToken: refreshToken
+    });
+    
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Refresh token endpoint
+app.post('/token', (req, res) => {
+  const refreshToken = req.body.token;
+
+  if(refreshToken == null) return res.sendStatus(401);
+  if(!refreshTokens.includes(refreshToken)) return res.sendStatus(403);
+
+  jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
+    if(err) return res.sendStatus(403);
+    const accessToken = generateAccessToken({ 
+      id: user.id, 
+      username: user.username 
+    });
+    res.json({ accessToken: accessToken });
+  });
+});
+
+// Logout endpoint
+app.delete('/logout', (req, res) => {
+  refreshTokens = refreshTokens.filter(token => token !== req.body.token);
+  res.sendStatus(204);
+});
+
 // Start the server
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
-
-
-
