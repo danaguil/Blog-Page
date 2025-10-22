@@ -3,6 +3,7 @@
     Send req.body to the /register endpoin
 */
 
+// Handle form submission
 document.getElementById('registerForm').addEventListener('submit', async (e) => {
     e.preventDefault(); // CRITICAL: Prevent default form submission
     

@@ -19,17 +19,6 @@ connectDB();
 // Store refresh tokens (in production, use Redis or database)
 let refreshTokens = [];
 
-// Mock posts for testing
-const posts = [
-  {
-    username: 'dan',
-    title: 'My First Post'
-  },
-  {
-    username: 'carlos',
-    title: 'A Day in the Life'
-  }
-];
 
 // ===== MIDDLEWARE =====
 function authenticateToken(req, res, next) {
@@ -49,24 +38,9 @@ function generateAccessToken(user) {
   return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '40s' });
 }
 
-// ===== ROUTES =====
-
-// Serve HTML pages
-app.get('/', (_req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'login.html'));
-});
-
-app.get('/home', (_req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'home.html'));
-});
-
-app.get('/register', (_req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'register.html'));
-});
-
 // Protected route example
 app.get('/posts', authenticateToken, (req, res) => {
-  res.json(posts.filter(post => post.username === req.user.username));
+  res.json(UserModel.filter(post => post.username === req.user.username));
 });
 
 // ===== AUTHENTICATION ENDPOINTS =====
