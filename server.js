@@ -77,6 +77,11 @@ app.post('/login', async (req, res) => {
   try {
     const { username, password } = req.body;
     
+    // Simple validation
+    if (!username || !password) {
+      return res.status(400).json({ message: 'Username and password are required' });
+    }
+
     // Find the user in MongoDB
     const user = await UserModel.findOne({ username });
     if (!user) {
