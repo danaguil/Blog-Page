@@ -82,7 +82,7 @@ app.post('/login', async (req, res) => {
       return res.status(400).json({ message: 'Username and password are required' });
     }
 
-    // Find the user in MongoDB
+    // Find the user in MongoDBb
     const user = await UserModel.findOne({ username });
     if (!user) {
       return res.status(400).json({ error: 'Invalid credentials' });
@@ -138,6 +138,11 @@ app.delete('/logout', (req, res) => {
   refreshTokens = refreshTokens.filter(token => token !== req.body.token);
   res.sendStatus(204);
 });
+
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'login.html'));
+});
+
 
 // Start the server
 app.listen(PORT, () => {
